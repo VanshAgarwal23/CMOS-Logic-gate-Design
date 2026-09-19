@@ -88,7 +88,7 @@ M4 node_int in_B 0 0 NMOD W=2u L=1u
 .meas tran tfall TRIG V(out) VAL=4.5 FALL=1 TARG V(out) VAL=0.5 FALL=1
 
 * Average Power Dissipation
-.meas tran avg_power AVG P(Vdd) FROM=0ns TO=400ns
+.meas tran avg_power AVG I(Vdd)*5 FROM=0ns TO=400ns
 
 * Peak Current
 .meas tran peak_current MAX I(Vdd)
