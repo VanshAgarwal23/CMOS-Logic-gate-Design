@@ -1,0 +1,86 @@
+* CMOS Inverter - Working Simulation
+* Created: 2026-09-19
+* Description: Complete CMOS inverter with transient analysis
+* Technology: 1µm CMOS
+* Supply Voltage: 5V
+
+.title CMOS Inverter Circuit
+
+* Power Supply
+Vdd vdd 0 DC 5
+
+* Input Signal - Pulse waveform
+* PULSE(V_initial V_peak T_delay T_rise T_fall T_on T_period)
+Vin in 0 PULSE(0 5 10ns 1ns 1ns 40ns 100ns)
+
+* Load Capacitance (representing next gate input)
+CL out 0 1pF
+
+* PMOS Transistor (Pull-up network)
+* Connects: Drain Output Source VDD Gate Input Body VDD
+M1 out in vdd vdd PMOD W=4u L=1u
+
+* NMOS Transistor (Pull-down network)
+* Connects: Drain Output Source GND Gate Input Body GND
+M2 out in 0 0 NMOD W=2u L=1u
+
+* MOSFET Models - 1µm Technology Parameters
+.model NMOD NMOS (
++ LEVEL=1
++ VTO=0.7
++ KP=120u
++ GAMMA=0.4
++ PHI=0.7
++ LAMBDA=0.04
++ TOX=20n
++ CJ=200u
++ CJSW=300p
++ MJ=0.5
++ MJSW=0.3
++ PB=0.8
++ )
+
+.model PMOD PMOS (
++ LEVEL=1
++ VTO=-0.7
++ KP=40u
++ GAMMA=0.4
++ PHI=0.7
++ LAMBDA=0.05
++ TOX=20n
++ CJ=200u
++ CJSW=300p
++ MJ=0.5
++ MJSW=0.3
++ PB=0.8
++ )
+
+* Transient Analysis: Simulate from 0 to 300ns
+.tran 0 300ns 0 0.1ns
+
+* Measurements
+* Propagation Delay - High to Low (input rises, output falls)
+.meas tran tpHL TRIG V(in) VAL=2.5 RISE=1 TARG V(out) VAL=2.5 FALL=1
+
+* Propagation Delay - Low to High (input falls, output rises)
+.meas tran tpLH TRIG V(in) VAL=2.5 FALL=1 TARG V(out) VAL=2.5 RISE=1
+
+* Average Propagation Delay
+.meas tran tp PARAM='(tpHL+tpLH)/2'
+
+* Output Rise Time (10% to 90%)
+.meas tran trise TRIG V(out) VAL=0.5 RISE=1 TARG V(out) VAL=4.5 RISE=1
+
+* Output Fall Time (90% to 10%)
+.meas tran tfall TRIG V(out) VAL=4.5 FALL=1 TARG V(out) VAL=0.5 FALL=1
+
+* Average Power Dissipation
+.meas tran avg_power AVG P(Vdd) FROM=0ns TO=300ns
+
+* Peak Current
+.meas tran peak_current MAX I(Vdd)
+
+* Control statements
+.options plotwinsize=0
+.backanno
+.end

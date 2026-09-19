@@ -1,0 +1,99 @@
+* CMOS NAND Gate (2-input) - Working Simulation
+* Created: 2026-09-19
+* Description: Complete 2-input CMOS NAND gate with transient analysis
+* Technology: 1µm CMOS
+* Supply Voltage: 5V
+
+.title CMOS NAND2 Gate Circuit
+
+* Power Supply
+Vdd vdd 0 DC 5
+
+* Input Signals - Two pulse waveforms with different frequencies
+* Input A: 5 MHz frequency
+Vin_A in_A 0 PULSE(0 5 10ns 1ns 1ns 100ns 200ns)
+
+* Input B: 10 MHz frequency (to create different combinations)
+Vin_B in_B 0 PULSE(0 5 5ns 1ns 1ns 50ns 100ns)
+
+* Load Capacitance (representing next gate input)
+CL out 0 1pF
+
+* PMOS Pull-up Network (Parallel configuration for NAND)
+* Two PMOS transistors in parallel between VDD and output
+
+* PMOS M1 - Gate controlled by Input A
+M1 out in_A vdd vdd PMOD W=8u L=1u
+
+* PMOS M2 - Gate controlled by Input B
+M2 out in_B vdd vdd PMOD W=8u L=1u
+
+* NMOS Pull-down Network (Series configuration for NAND)
+* Two NMOS transistors in series between output and GND
+
+* NMOS M3 - Gate controlled by Input A
+M3 out in_A node_int 0 NMOD W=2u L=1u
+
+* NMOS M4 - Gate controlled by Input B (connected to intermediate node)
+M4 node_int in_B 0 0 NMOD W=2u L=1u
+
+* MOSFET Models - 1µm Technology Parameters
+.model NMOD NMOS (
++ LEVEL=1
++ VTO=0.7
++ KP=120u
++ GAMMA=0.4
++ PHI=0.7
++ LAMBDA=0.04
++ TOX=20n
++ CJ=200u
++ CJSW=300p
++ MJ=0.5
++ MJSW=0.3
++ PB=0.8
++ )
+
+.model PMOD PMOS (
++ LEVEL=1
++ VTO=-0.7
++ KP=40u
++ GAMMA=0.4
++ PHI=0.7
++ LAMBDA=0.05
++ TOX=20n
++ CJ=200u
++ CJSW=300p
++ MJ=0.5
++ MJSW=0.3
++ PB=0.8
++ )
+
+* Transient Analysis: Simulate from 0 to 400ns
+.tran 0 400ns 0 0.1ns
+
+* Measurements
+* Propagation Delay - High to Low
+.meas tran tpHL TRIG V(in_A) VAL=2.5 RISE=1 TARG V(out) VAL=2.5 FALL=1
+
+* Propagation Delay - Low to High
+.meas tran tpLH TRIG V(in_A) VAL=2.5 FALL=1 TARG V(out) VAL=2.5 RISE=1
+
+* Average Propagation Delay
+.meas tran tp PARAM='(tpHL+tpLH)/2'
+
+* Output Rise Time (10% to 90%)
+.meas tran trise TRIG V(out) VAL=0.5 RISE=1 TARG V(out) VAL=4.5 RISE=1
+
+* Output Fall Time (90% to 10%)
+.meas tran tfall TRIG V(out) VAL=4.5 FALL=1 TARG V(out) VAL=0.5 FALL=1
+
+* Average Power Dissipation
+.meas tran avg_power AVG P(Vdd) FROM=0ns TO=400ns
+
+* Peak Current
+.meas tran peak_current MAX I(Vdd)
+
+* Control statements
+.options plotwinsize=0
+.backanno
+.end
