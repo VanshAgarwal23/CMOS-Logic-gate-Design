@@ -1,0 +1,39 @@
+# LTspice temporary files
+*.raw
+*.net
+*.log
+*.plt
+*.trash
+
+# Backup and temporary files
+*.bak
+*.tmp
+*~
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+*.exe
+*.dll
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Output and simulation results
+*.txt
+*.csv
+.output/
+
+# System files
+.project
+.classpath

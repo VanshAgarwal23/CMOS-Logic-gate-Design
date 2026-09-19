@@ -1,0 +1,96 @@
+* CMOS Inverter - Simulation Template
+* LTspice Netlist Format (.cir)
+*
+* Circuit Description:
+* Simple CMOS inverter with NMOS pull-down and PMOS pull-up
+* Technology: 1µm CMOS (Educational)
+* Supply Voltage: 5V
+* Load Capacitance: 1pF
+
+* ==============================================
+* CIRCUIT DEFINITION
+* ==============================================
+
+.title CMOS Inverter Circuit
+
+* Power supply
+Vdd 1 0 DC 5
+
+* Input signal (pulse for transient analysis)
+* Pulse(V1 V2 Td Tr Tf Pw Per)
+Vin in 0 PULSE(0 5 0 1ns 1ns 5ns 10ns)
+
+* Load capacitance
+CL out 0 1pF
+
+* ==============================================
+* TRANSISTOR DEFINITIONS
+* ==============================================
+
+* PMOS Pull-up (W/L = 4/1)
+M1 out in 1 1 PMOD W=4u L=1u
+
+* NMOS Pull-down (W/L = 2/1)
+M2 out in 0 0 NMOD W=2u L=1u
+
+* ==============================================
+* MOSFET MODELS (1µm Technology)
+* ==============================================
+
+.model NMOD NMOS (
++ Level=1
++ VTO=0.7
++ KP=20u
++ LAMBDA=0.02
++ W=1u L=1u
++ )
+
+.model PMOD PMOS (
++ Level=1
++ VTO=-0.7
++ KP=10u
++ LAMBDA=0.02
++ W=1u L=1u
++ )
+
+* ==============================================
+* SIMULATION COMMANDS
+* ==============================================
+
+* Transient Analysis: 0 to 100ns with 1ns time steps
+.tran 0 100ns 0 1ns
+
+* ==============================================
+* MEASUREMENTS (Optional)
+* ==============================================
+
+* Propagation delay: Low to High (tpLH)
+.meas tran tpLH TRIG V(in) VAL=2.5 RISE=1 TARG V(out) VAL=2.5 FALL=1
+
+* Propagation delay: High to Low (tpHL)
+.meas tran tpHL TRIG V(in) VAL=2.5 FALL=1 TARG V(out) VAL=2.5 RISE=1
+
+* Rise time
+.meas tran tr TRIG V(out) VAL=1 RISE=1 TARG V(out) VAL=4 RISE=1
+
+* Fall time
+.meas tran tf TRIG V(out) VAL=4 FALL=1 TARG V(out) VAL=1 FALL=1
+
+* ==============================================
+* OUTPUT CONTROL
+* ==============================================
+
+* Print results to file
+.print tran V(in) V(out) I(Vdd)
+
+* End of netlist
+.end
+
+* ==============================================
+* NOTES:
+* 1. Adjust W/L ratios for different sizing
+* 2. Modify VDD for different supply voltages
+* 3. Change pulse parameters for different input frequencies
+* 4. Uncomment measurements as needed
+* 5. Use .measure commands to extract specific values
+* ==============================================
