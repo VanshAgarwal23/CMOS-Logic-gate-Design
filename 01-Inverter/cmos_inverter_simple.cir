@@ -1,22 +1,27 @@
-* CMOS Inverter - Simple and Clean
-.title CMOS Inverter
+* CMOS Inverter - Final LTspice Characterization
+* LTspice 26.0.2 for Windows
+* Verified simulation: 2026-09-28
 
-Vdd vdd 0 DC 5
-Vin in 0 PULSE(0 5 10ns 1ns 1ns 40ns 100ns)
-CL out 0 1p
+VDD VDD 0 5
+Vin IN_NODE 0 PULSE(0 5 10ns 1ns 1ns 40ns 1us)
+CL OUT_NODE 0 50f
 
-M1 out in vdd vdd PMOS_MODEL
-M2 out in 0 0 NMOS_MODEL
+* CMOS inverter
+M1 OUT_NODE IN_NODE VDD VDD pmos_model W=4u L=1u
+M2 OUT_NODE IN_NODE 0 0 nmos_model W=2u L=1u
 
-.model NMOS_MODEL NMOS (VTO=0.7 KP=20u LAMBDA=0.04)
-.model PMOS_MODEL PMOS (VTO=-0.7 KP=10u LAMBDA=0.05)
+* Explicit Level-1 MOS models
+.model nmos_model NMOS (LEVEL=1 VTO=0.7 KP=20u LAMBDA=0.04 TOX=20n)
+.model pmos_model PMOS (LEVEL=1 VTO=-0.7 KP=10u LAMBDA=0.05 TOX=20n)
 
-.tran 0 300ns 0 0.1ns
+.tran 0 100n 0 10p
 
-.meas tran tpHL TRIG V(in) VAL=2.5 RISE=1 TARG V(out) VAL=2.5 FALL=1
-.meas tran tpLH TRIG V(in) VAL=2.5 FALL=1 TARG V(out) VAL=2.5 RISE=1
+.meas tran tpHL TRIG V(IN_NODE) VAL=2.5 RISE=1 TARG V(OUT_NODE) VAL=2.5 FALL=1
+.meas tran tpLH TRIG V(IN_NODE) VAL=2.5 FALL=1 TARG V(OUT_NODE) VAL=2.5 RISE=1
 .meas tran tp PARAM='(tpHL+tpLH)/2'
-.meas tran avg_power AVG I(Vdd)*5 FROM=0ns TO=300ns
-.meas tran peak_current MAX I(Vdd)
 
+.meas tran Pavg AVG (-V(VDD)*I(Vdd)) FROM 0 TO 100n
+.meas tran Esw INTEG (-V(VDD)*I(Vdd)) FROM 0 TO 100n
+
+.backanno
 .end

@@ -1,179 +1,142 @@
-# CMOS Inverter - Simulation Results Report
+# CMOS Inverter — Simulation Results Report
 
-## Date: 2026-09-19
-## Status: ✅ SIMULATION COMPLETED SUCCESSFULLY
+## 1. Overview
 
----
+This report documents the final LTspice 26.0.2 characterization of the CMOS inverter in the `01-Inverter` stage of the CMOS Logic Gate Design project. The final characterization uses explicit Level-1 NMOS/PMOS models, a 5 V supply, a 50 fF output load, controlled switching activity within a 100 ns simulation window, and LTspice `.meas` extraction for propagation delay, average power, and integrated supply energy.
 
-## Circuit Configuration
+## 2. Final Circuit Configuration
 
-### Components
-- **PMOS (M1)**: BSS84 equivalent model
-- **NMOS (M2)**: BSS170 equivalent model
-- **Supply Voltage (Vdd)**: 5V DC
-- **Load Capacitance (CL)**: 1pF
-- **Input Signal**: PULSE(0 5 10ns 1ns 1ns 40ns 100ns)
-- **Simulation Time**: 0 to 300ns
+| Parameter | Final value |
+|---|---:|
+| Supply voltage | 5 V |
+| PMOS M1 | W = 4 µm, L = 1 µm |
+| NMOS M2 | W = 2 µm, L = 1 µm |
+| Output load | 50 fF |
+| Input waveform | `PULSE(0 5 10ns 1ns 1ns 40ns 1us)` |
+| Simulation interval | 0–100 ns |
+| Maximum timestep | 10 ps |
+| Input node | `IN_NODE` |
+| Output node | `OUT_NODE` |
 
-### Technology Parameters
-- **NMOS Threshold (VTO)**: 0.7V
-- **PMOS Threshold (VTO)**: -0.7V
-- **NMOS Transconductance (KP)**: 20µ
-- **PMOS Transconductance (KP)**: 10µ
-- **Channel Length Modulation (LAMBDA)**: 0.04 (NMOS), 0.05 (PMOS)
+The PMOS source and bulk are connected to VDD, the NMOS source and bulk are connected to ground, and both gates are driven by `IN_NODE`.
 
----
+## 3. Device Models
 
-## Simulation Results
-
-### Timing Measurements
-
-| Parameter | Value | Unit | Description |
-|-----------|-------|------|-------------|
-| **tpHL** | 12.548 | ps | Propagation delay (High→Low) |
-| **tpLH** | 21.776 | ps | Propagation delay (Low→High) |
-| **tp (Average)** | 17.162 | ps | Mean propagation delay |
-| **Time Window** | 0 to 300 | ns | Total simulation duration |
-
-#### Detailed Timing Analysis
-
-**tpHL (High to Low Transition):**
-- Value: 12.548 picoseconds
-- Range: 10.5ns to 23.048ns
-- Represents: Time for output to fall when input rises
-- Cause: NMOS pull-down is faster than PMOS pull-up
-
-**tpLH (Low to High Transition):**
-- Value: 21.776 picoseconds
-- Range: 51.5ns to 73.276ns
-- Represents: Time for output to rise when input falls
-- Cause: PMOS pull-up is slower (lower mobility)
-
-**Average Delay (tp):**
-- Value: 17.162 picoseconds
-- Formula: (tpHL + tpLH) / 2
-- Indicates balanced but asymmetric performance
-
----
-
-### Power Measurements
-
-| Parameter | Value | Unit | Description |
-|-----------|-------|------|-------------|
-| **Average Power** | -0.202841 | mW | Total power dissipation |
-| **Peak Current** | -9.658 × 10⁻¹⁴ | A | Maximum supply current |
-
-#### Power Analysis
-
-**Average Power Dissipation:**
-- **-0.202841 mW** (approximately 0.203 mW)
-- Includes both dynamic and static power
-- Negative sign indicates current direction (convention)
-- **Actual value: ~203 µW**
-
-**Peak Current:**
-- **-9.658 × 10⁻¹⁴ A** (very small, near measurement noise)
-- Indicates extremely low static leakage at 27°C
-- Most power is dynamic (during switching)
-
----
-
-## Performance Summary
-
-### Speed Characteristics
-- ✅ **Fast LOW transition**: 12.548 ps (NMOS pull-down dominates)
-- ✅ **Slower HIGH transition**: 21.776 ps (PMOS pull-up limited)
-- ✅ **Asymmetry ratio**: tpLH/tpHL = 1.74 (PMOS is ~74% slower)
-
-### Power Characteristics
-- ✅ **Low static power**: Negligible leakage at 27°C
-- ✅ **Reasonable dynamic power**: ~203 µW at 10 MHz
-- ✅ **Efficiency**: Good for 1µm-scale technology
-
-### Circuit Behavior
-- ✅ **Output inverts correctly**: V(out) = NOT V(in)
-- ✅ **Full voltage swing**: 0V to 5V rail-to-rail
-- ✅ **No oscillations**: Clean transitions
-- ✅ **Stable operation**: No glitches observed
-
----
-
-## Design Analysis
-
-### Strengths
-1. ✅ **Proper logic inversion** — Output correctly inverts input
-2. ✅ **Fast switching** — Sub-100ps propagation delays
-3. ✅ **Low power leakage** — Good for standby conditions
-4. ✅ **Predictable delays** — Consistent pulse-to-pulse
-
-### Observations
-1. **Asymmetric delays** — tpLH > tpHL due to PMOS/NMOS mobility difference
-   - NMOS: Higher mobility (faster pull-down)
-   - PMOS: Lower mobility (slower pull-up)
-   - This is expected in CMOS technology
-
-2. **Load-dependent delay** — 1pF load causes measurable propagation delay
-   - Delay scales with capacitance
-   - Critical for high-frequency operation
-
-3. **Power consumption** — ~203 µW at 10 MHz, 1pF load
-   - Low static leakage
-   - Dynamic power dominant during switching
-
----
-
-## Comparison Reference
-
-### Typical 1µm CMOS Inverter Specifications
-- Propagation delay: 10-20 ps ✅ (Our circuit: 12-21 ps)
-- Power dissipation: 100-500 µW ✅ (Our circuit: 203 µW)
-- Output swing: 0-5V ✅ (Our circuit: Achieved)
-
----
-
-## Conclusions
-
-✅ **The CMOS inverter circuit is functioning correctly!**
-
-1. **Logic Function**: Properly inverts input signal
-2. **Timing**: Fast propagation delays suitable for logic circuits
-3. **Power**: Efficient power consumption with low leakage
-4. **Performance**: Meets expected characteristics for 1µm technology
-
-**Ready for:** 
-- ✅ Next phase: NAND and NOR gate design
-- ✅ Comparative analysis: Speed, power, and area trade-offs
-
----
-
-## Raw Measurement Data
-
-### From LTspice Simulation Output
-```
-Circuit: C:\Users\Test\Vivado_projects\CMOS-Logic-Gate-Design\01-Inverter\cmos_inverter_simple.cir
-Start Time: Sat Sep 19 17:28:48 2026
-Simulation Duration: 0.382 seconds
-
-Measurements:
-tphl = 1.25479808963e-08 s = 12.548 ps
-tplh = 2.17763346481e-08 s = 21.776 ps
-tp = 1.71621577722e-08 s = 17.162 ps
-avg_power = -0.000202841419008 W = -0.203 mW
-peak_current = -9.65820576727e-14 A
+```spice
+.model nmos_model NMOS (LEVEL=1 VTO=0.7 KP=20u LAMBDA=0.04 TOX=20n)
+.model pmos_model PMOS (LEVEL=1 VTO=-0.7 KP=10u LAMBDA=0.05 TOX=20n)
 ```
 
----
+The final characterization does not depend on the earlier BSS84/BSS170 discrete-device models.
 
-## Next Steps
+## 4. Simulation Method
 
-1. ✅ **Inverter verified** — Ready for storage
-2. ⏳ **NAND gate design** — Create schematic and simulate
-3. ⏳ **NOR gate design** — Create schematic and simulate
-4. ⏳ **Comparative analysis** — Speed, power, area comparison
-5. ⏳ **Final documentation** — Project summary and README
+The input pulse has a 1 µs period while the transient analysis covers only 100 ns. Consequently, the characterization window contains the first rising transition near 10 ns and the first falling transition near 51 ns without a second periodic cycle entering the measurement window.
 
----
+```spice
+.tran 0 100n 0 10p
+```
 
-**Report Generated:** 2026-09-19  
-**Author:** Vansh Agrawal (VanshAgrawal23)  
-**Project:** CMOS Logic Gate Design & Analysis
+## 5. Logic Verification
+
+The simulated inverter exhibits the expected complementary behavior:
+
+- Input LOW drives the output HIGH.
+- Input HIGH drives the output LOW.
+- The output transitions in the opposite direction to the input.
+- The output reaches approximately the 0 V and 5 V rails under the 50 fF load.
+
+## 6. Propagation Delay
+
+LTspice extracted:
+
+- `tpHL = 5.57339588367e-10 s = 0.557339588367 ns`
+- `tpLH = 5.38142708830e-10 s = 0.538142708830 ns`
+
+Measurement intervals:
+
+- `tpHL`: 10.500000 ns → 11.057340 ns
+- `tpLH`: 51.500000 ns → 52.038143 ns
+
+The mean propagation delay is:
+
+```text
+tp = (tpHL + tpLH) / 2
+tp = 0.547741148598 ns
+```
+
+**Average propagation delay = 0.547741 ns**
+
+Both constituent delays were successfully extracted, so the mean uses verified data only.
+
+## 7. Power and Energy
+
+Average supply power over 0–100 ns:
+
+```text
+Pavg = 1.37587907619e-05 W
+     = 13.7587907619 µW
+```
+
+Integrated supply energy over 0–100 ns:
+
+```text
+Esw = 1.37587907619e-12 J
+    = 1.37587907619 pJ
+```
+
+The consistency check is:
+
+```text
+Esw / 100 ns = 13.7587907619 µW
+```
+
+**Measurement note:** `Esw` is total supply energy delivered during the complete 0–100 ns window. It is not the energy of one isolated switching transition.
+
+## 8. Waveform Analysis
+
+The final waveform contains input voltage, output voltage, supply voltage, and supply-current activity. The input changes from 0 V to 5 V near 10 ns, causing the output to transition from HIGH to LOW. The input returns from 5 V to 0 V near 51 ns, causing the output to transition from LOW to HIGH.
+
+Switching-current activity is concentrated around the input/output transitions while the supply voltage remains at 5 V.
+
+## 9. LTspice Warnings
+
+The successful run reported Level-1 model/device warnings concerning:
+
+- oxide thickness being thinner than recommended;
+- M1/M2 channel length being shorter than recommended;
+- M1/M2 channel width being narrower than recommended.
+
+These are model/device warnings and did not prevent operating-point convergence, transient simulation, or measurement extraction.
+
+## 10. Final Results
+
+| Metric | Verified result |
+|---|---:|
+| `tpHL` | **0.557340 ns** |
+| `tpLH` | **0.538143 ns** |
+| Average propagation delay | **0.547741 ns** |
+| Average power | **13.758791 µW** |
+| Energy, 0–100 ns | **1.375879 pJ** |
+| VDD | **5 V** |
+| CL | **50 fF** |
+
+## 11. Evaluation-Point Verification
+
+1. **Standardized power benchmarking:** The inverter uses 5 V, a 50 fF load, a 100 ns characterization window, and a 10 ps maximum timestep. Direct power comparison across gates still requires identical switching activity.
+2. **Isolated transitions:** The 1 µs input period places only the first rising and falling transitions inside the 100 ns measurement window.
+3. **Device sizing:** PMOS W/L = 4/1 µm and NMOS W/L = 2/1 µm.
+4. **Realistic load:** Output load is 50 fF rather than the earlier 1 pF load.
+5. **Verified mean delay:** Both `tpHL` and `tpLH` were successfully measured and averaged directly.
+
+## 12. Conclusion
+
+The final CMOS inverter simulation completed successfully and produced verified propagation-delay, average-power, and integrated-energy measurements. The corrected topology, explicit MOS models, 50 fF load, controlled input stimulus, and verified measurement directives provide the final characterization basis for the inverter.
+
+### Final verified values
+
+- **tpHL = 0.557340 ns**
+- **tpLH = 0.538143 ns**
+- **Average propagation delay = 0.547741 ns**
+- **Average power = 13.758791 µW**
+- **Energy over 0–100 ns = 1.375879 pJ**

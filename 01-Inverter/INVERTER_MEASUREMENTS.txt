@@ -1,0 +1,81 @@
+CMOS INVERTER — VERIFIED LTSPICE MEASUREMENTS
+LTspice 26.0.2 for Windows
+Verification date: 28-09-2026
+
+========================================
+CIRCUIT CONFIGURATION
+========================================
+Supply voltage (VDD): 5 V
+PMOS M1: W = 4u, L = 1u
+NMOS M2: W = 2u, L = 1u
+Output load capacitance (CL): 50 fF
+
+Input:
+PULSE(0 5 10ns 1ns 1ns 40ns 1us)
+
+Transient simulation:
+.tran 0 100n 0 10p
+
+Input node: IN_NODE
+Output node: OUT_NODE
+
+========================================
+PROPAGATION DELAY
+========================================
+tpHL:
+Raw = 5.57339588367e-10 s
+Value = 0.557339588367 ns
+Measurement: 10.500000 ns to 11.057340 ns
+
+tpLH:
+Raw = 5.38142708830e-10 s
+Value = 0.538142708830 ns
+Measurement: 51.500000 ns to 52.038143 ns
+
+Average propagation delay:
+tp = (tpHL + tpLH) / 2
+tp = 5.47741148598e-10 s
+tp = 0.547741148598 ns
+
+========================================
+POWER
+========================================
+Measurement window: 0 to 100 ns
+
+Pavg:
+Raw = 1.37587907619e-05 W
+Value = 13.7587907619 uW
+
+Esw:
+Raw = 1.37587907619e-12 J
+Value = 1.37587907619 pJ
+
+Consistency:
+Esw / 100 ns = 13.7587907619 uW
+
+IMPORTANT:
+Esw is the total supply energy delivered during the complete
+0-100 ns measurement window. It is NOT the energy of one
+isolated switching transition.
+
+========================================
+SIMULATION STATUS
+========================================
+Simulation completed successfully.
+Direct Newton iteration succeeded in finding the operating point.
+
+LTspice model warnings:
+- Oxide thickness thinner than recommended for Level-1 MOSFET.
+- M1/M2 channel length shorter than recommended.
+- M1/M2 channel width narrower than recommended.
+
+These warnings did not prevent simulation or measurement extraction.
+
+========================================
+FINAL VERIFIED VALUES
+========================================
+tpHL                = 0.557340 ns
+tpLH                = 0.538143 ns
+Average delay       = 0.547741 ns
+Average power       = 13.758791 uW
+Energy (0-100 ns)   = 1.375879 pJ
