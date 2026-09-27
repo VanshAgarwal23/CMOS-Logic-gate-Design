@@ -30,7 +30,7 @@ __pycache__/
 *.pyo
 
 # Output and simulation results
-*.txt
+
 *.csv
 .output/
 

@@ -1,0 +1,120 @@
+CMOS 2-INPUT NOR GATE
+LTspice 26.0.2 for Windows
+Simulation Date: 28-09-2026
+
+========================================
+CIRCUIT CONFIGURATION
+========================================
+
+Supply voltage (VDD): 5 V
+Output load capacitance (CL): 50 fF
+
+PMOS M1: W = 8u, L = 1u
+PMOS M2: W = 8u, L = 1u
+NMOS M3: W = 2u, L = 1u
+NMOS M4: W = 2u, L = 1u
+
+Input A:
+PULSE(0 5 10ns 1ns 1ns 100ns 200ns)
+
+Input B:
+DC 0 V
+
+========================================
+TRANSIENT SIMULATION
+========================================
+
+Simulation command:
+.tran 0 400ns 0 0.1ns
+
+Simulation status:
+SUCCESSFUL
+
+========================================
+PROPAGATION DELAY MEASUREMENTS
+========================================
+
+tpHL:
+Raw value = 5.37748324787e-10 s
+Converted value = 0.537748324787 ns
+
+Measurement interval:
+FROM 1.05e-08 s
+TO   1.10377483248e-08 s
+
+Equivalent interval:
+FROM 10.500000 ns
+TO   11.037748 ns
+
+
+tpLH:
+Raw value = 4.26756714561e-10 s
+Converted value = 0.426756714561 ns
+
+Measurement interval:
+FROM 1.11499999983e-07 s
+TO   1.11926756698e-07 s
+
+Equivalent interval:
+FROM 111.500000 ns
+TO   111.926757 ns
+
+========================================
+AVERAGE PROPAGATION DELAY
+========================================
+
+tp(avg) = (tpHL + tpLH) / 2
+
+tp(avg) = (0.537748324787 + 0.426756714561) / 2
+
+tp(avg) = 0.482252519674 ns
+
+========================================
+POWER MEASUREMENT
+========================================
+
+Measurement interval:
+0 to 400 ns
+
+Average supply power:
+Pavg = 6.63343882795e-06 W
+Pavg = 6.63343882795 uW
+
+Integrated supply energy:
+Esw = 2.65337553118e-12 J
+Esw = 2.65337553118 pJ
+
+Energy consistency check:
+Esw / 400 ns = 6.63343882795 uW
+
+Note:
+Esw is the total energy delivered by the supply over the
+0-400 ns measurement window. It should not be interpreted
+as the energy of a single isolated switching transition.
+
+========================================
+FINAL VERIFIED RESULTS
+========================================
+
+tpHL                  = 0.537748 ns
+tpLH                  = 0.426757 ns
+Average propagation   = 0.482253 ns
+Average power         = 6.633439 uW
+Energy, 0-400 ns      = 2.653376 pJ
+
+Simulation completed successfully.
+
+========================================
+LTspice MODEL WARNINGS
+========================================
+
+The simulation completed successfully, but LTspice reported
+Level-1 MOSFET model/device warnings concerning:
+
+- M1/M2 channel length and width being shorter/narrower
+  than recommended for the selected Level-1 model.
+- M3/M4 channel length and width being shorter/narrower
+  than recommended for the selected Level-1 model.
+
+These are model/device warnings and did not prevent the
+transient simulation or measurement extraction.
