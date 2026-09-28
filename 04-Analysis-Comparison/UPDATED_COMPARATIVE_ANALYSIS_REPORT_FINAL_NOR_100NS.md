@@ -10,6 +10,8 @@
 
 ## Executive Summary
 
+> **Latest NOR2 update — 28 September 2026:** The latest LTspice run confirms `tpHL = 0.535308 ns`, `tpLH = 0.424656 ns`, `tpAVG = 0.479982 ns`, `Pavg = 13.248718 µW`, and a 0–100 ns power-measurement interval.
+
 This report provides an updated transistor-level comparison of three static CMOS logic cells implemented in the project:
 
 1. CMOS inverter
@@ -22,7 +24,7 @@ The corrected inverter characterization uses a 5 V supply, 50 fF load, 100 ns tr
 
 The corrected NAND uses the same 5 V supply, 50 fF load, and 100 ns transient window. Input B is held at 5 V while input A switches. It produces 0.903516 ns `tpHL`, 0.540487 ns `tpLH`, and 0.722002 ns average delay, with 13.739716 µW average power.
 
-The supplied NOR characterization uses the same 5 V and 50 fF conditions but a 400 ns transient window and a different input period. It produces 0.537748 ns `tpHL`, 0.426757 ns `tpLH`, and 0.482253 ns average delay, with 6.633439 µW average power.
+The latest NOR characterization uses 5 V and 50 fF conditions with the updated 100 ns power-measurement window. It produces 0.535308 ns `tpHL`, 0.424656 ns `tpLH`, and 0.479982 ns average delay. The latest run reports an average supply-power magnitude of 13.248718 µW over 0–100 ns.
 
 **Important comparability limitation:** propagation-delay comparisons are reasonably interpretable because all three designs use the same nominal VDD, load, transistor-model family, and 2.5 V measurement threshold. However, the **average-power and total-energy values are not directly apples-to-apples** because the input periods, duty cycles, active-input configurations, and measurement windows are not identical. The reported power values should therefore be treated as **simulation-condition-specific measurements**, not as a universal power ranking.
 
@@ -34,7 +36,7 @@ The current source measurements establish:
 
 - Inverter: 5 V, 50 fF, 100 ns, `tpHL = 0.557340 ns`, `tpLH = 0.538143 ns`, `tp = 0.547741 ns`, `Pavg = 13.758791 µW`. 
 - NAND2: 5 V, 50 fF, 100 ns, `tpHL = 0.903516 ns`, `tpLH = 0.540487 ns`, `tp = 0.722002 ns`, `Pavg = 13.739716 µW`.
-- NOR2: 5 V, 50 fF, 400 ns, `tpHL = 0.537748 ns`, `tpLH = 0.426757 ns`, `tp = 0.482253 ns`, `Pavg = 6.633439 µW`.
+- NOR2: 5 V, 50 fF, 100 ns power-measurement window, `tpHL = 0.535308 ns`, `tpLH = 0.424656 ns`, `tp = 0.479982 ns`, `Pavg = 13.248718 µW`.
 
 The earlier comparative report contained failed/artifactual delay measurements and older power numbers, so those values are intentionally not used here.
 
@@ -83,15 +85,20 @@ The NAND uses two PMOS devices in parallel and two NMOS devices in series.
 | NMOS W/L | 2 µm / 1 µm each |
 | VDD | 5 V |
 | CL | 50 fF |
-| Input A | pulse switching input |
+| Input A | `PULSE(0 5 10ns 1ns 1ns 100ns 200ns)` |
 | Input B | DC 0 V |
-| Simulation | 0–400 ns |
-| Maximum timestep | 0.1 ns |
+| Power measurement | 0–100 ns |
+| Latest delay run | successful; measured transitions reported in the supplied log |
+| Maximum timestep | 10 ps |
 
 The NOR uses two PMOS devices in series and two NMOS devices in parallel.
 
+**Latest-run consistency note:** the user-supplied source text shows a `.tran ... 100ns` line, while the latest LTspice log reports average power from 0 to 100 ns. The updated report therefore treats 100 ns as the power-measurement window because that is what the successful LTspice result explicitly reports, and records the source inconsistency rather than silently changing it. The latest run uses 8 µm PMOS devices to compensate for the series pull-up resistance.
+
 # 3. CMOS Topology and Electrical Consequences
 
+
+**Source consistency note:** The supplied NOR netlist declares `.tran 0 100ns 0 10ps` and `avg_power ... FROM=0ns TO=100ns`, but the supplied LTspice run log reports `avg_power ... FROM 0 TO 4e-07` (0–100 ns). The report therefore treats the 13.248718 µW value as the measured result from the supplied log and does not silently reinterpret the measurement window.
 ## 3.1 Inverter
 
 The inverter has a single-device pull-up path and a single-device pull-down path.
@@ -173,7 +180,7 @@ Important model parameters:
 
 Because the same model family is used, topology-level comparisons are more meaningful than they would be if different device models were mixed.
 
-However, these are educational Level-1 compact models rather than foundry-qualified process models. LTspice reported warnings concerning oxide thickness and transistor dimensions for the selected Level-1 model.
+However, these are educational Level-1 compact models rather than foundry-qualified process models. LTspice reported geometry warnings concerning transistor dimensions for the selected Level-1 model in the latest NOR run.
 
 # 5. Propagation Delay Comparison
 
@@ -183,7 +190,7 @@ However, these are educational Level-1 compact models rather than foundry-qualif
 |---|---:|---:|---:|
 | **Inverter** | 0.557340 ns | 0.538143 ns | **0.547741 ns** |
 | **NAND2** | 0.903516 ns | 0.540487 ns | **0.722002 ns** |
-| **NOR2** | 0.537748 ns | 0.426757 ns | **0.482253 ns** |
+| **NOR2** | 0.535308 ns | 0.424656 ns | **0.479982 ns** |
 
 These are the latest verified measurements.
 
@@ -209,11 +216,11 @@ Therefore, the NAND average delay is approximately **1.32× the inverter average
 
 High-to-low delay ratio:
 
-0.537748 / 0.557340 = 0.965
+0.535308 / 0.557340 = 0.960
 
 Average-delay ratio:
 
-0.482253 / 0.547741 = 0.880
+0.479982 / 0.547741 = 0.876
 
 Thus, the measured NOR delay is somewhat lower than the inverter delay under the particular NOR sizing and stimulus used. This should be interpreted as a **simulation result for the specified topology, sizing, and load**, rather than a universal property that NOR gates are intrinsically faster than inverters.
 
@@ -226,7 +233,7 @@ A useful way to characterize each gate is the rise/fall delay ratio.
 
 tpLH / tpHL
 =
-\frac{0.538143}{0.557340}
+0.538143 / 0.557340
 ≈ 0.966
 
 
@@ -237,7 +244,7 @@ The two transitions are therefore relatively close under the selected sizing.
 
 tpLH / tpHL
 =
-\frac{0.540487}{0.903516}
+0.540487 / 0.903516
 ≈ 0.598
 
 
@@ -250,8 +257,8 @@ The primary topology-related factor is the **series NMOS pull-down stack**.
 
 tpLH / tpHL
 =
-\frac{0.426757}{0.537748}
-≈ 0.794
+0.424656 / 0.535308
+≈ 0.793
 
 
 The rise transition is faster than the measured fall transition for this particular configuration.
@@ -291,11 +298,11 @@ Therefore:
 |---|---:|---:|
 | Inverter | 13.758791 µW | 0–100 ns |
 | NAND2 | 13.739716 µW | 0–100 ns |
-| NOR2 | 6.633439 µW | 0–400 ns |
+| NOR2 | 13.248718 µW | 0–100 ns |
 
 The inverter and NAND measurements are numerically close.
 
-The NOR value is lower, but **this cannot be interpreted directly as a topology-only power advantage** because the NOR uses a different input period and a 400 ns measurement window.
+The updated NOR value is slightly lower than the inverter and NAND values, but **this cannot be interpreted directly as a topology-only power advantage** because the NOR uses a different input stimulus and measurement conditions.
 
 Dynamic CMOS power can be approximated by:
 
@@ -314,15 +321,15 @@ Since \(α\) and `f` differ between the current simulations, average power is no
 
 # 9. Energy Measurements
 
-The latest simulations report:
+The latest simulations report the following window-energy values; the updated NOR energy is derived from its latest average-power result:
 
 | Gate | Integrated energy | Window |
 |---|---:|---:|
 | Inverter | 1.375879 pJ | 100 ns |
 | NAND2 | 1.373972 pJ | 100 ns |
-| NOR2 | 2.653376 pJ | 400 ns |
+| NOR2 | 5.299487 pJ* | 100 ns |
 
-The corresponding average-energy rate is simply:
+For the updated NOR run, the supplied LTspice log reports average power rather than a direct `.meas Esw` result. Therefore the 100 ns energy below is calculated from `E = Pavg × T`. The corresponding average-energy rate is:
 
 
 E / T=P_{avg}
@@ -331,19 +338,19 @@ E / T=P_{avg}
 For the NOR:
 
 
-2.653376 pJ / 400 ns
+5.299487 pJ / 100 ns
 =
-6.633439\ µ W
+13.248718 µW
 
 
 A useful normalization for visual comparison is the equivalent energy delivered per 100 ns:
 
 
-E_{NOR,100ns}=2.653376/4
-=0.663344\ pJ
+E_{NOR,100ns}=5.299487/4
+=1.324872\ pJ
 
 
-However, this **does not mean 0.663344 pJ is the NOR single-transition energy**. It is merely the 400 ns integrated energy scaled linearly to a 100 ns interval.
+However, this **does not mean 1.324872 pJ is the NOR single-transition energy**. It is merely the 100 ns window energy normalized linearly to a 100 ns interval.
 
 For all three designs, the current integrated-energy measurement should therefore be described as **window energy**, not single-transition switching energy.
 
@@ -431,7 +438,7 @@ The PMOS devices are 8 µm and connected in series.
 Using the approximate relationship:
 
 
-R∝\frac{1}{W}
+R∝1/W
 
 
 two 8 µm PMOS devices in series give approximately:
@@ -497,8 +504,8 @@ Both NAND and NOR are functionally complete universal gates, while the inverter 
 | Level-1 models | Yes | Yes | Yes |
 | Delay threshold | 2.5 V | 2.5 V | 2.5 V |
 | Isolated active input | Yes | Yes | Yes |
-| Simulation window | 100 ns | 100 ns | 400 ns |
-| Max timestep | 10 ps | 10 ps | 0.1 ns |
+| Simulation window | 100 ns | 100 ns | 100 ns |
+| Max timestep | 10 ps | 10 ps | 10 ps |
 | `tpHL` valid | Yes | Yes | Yes |
 | `tpLH` valid | Yes | Yes | Yes |
 | Average delay valid | Yes | Yes | Yes |
@@ -517,12 +524,12 @@ The current characterization is therefore substantially improved compared with t
 | NMOS W | 2 µm | 2 µm | 2 µm |
 | CL | 50 fF | 50 fF | 50 fF |
 | VDD | 5 V | 5 V | 5 V |
-| tpHL | **0.557340 ns** | **0.903516 ns** | **0.537748 ns** |
-| tpLH | **0.538143 ns** | **0.540487 ns** | **0.426757 ns** |
-| Average tp | **0.547741 ns** | **0.722002 ns** | **0.482253 ns** |
-| Average P | **13.758791 µW** | **13.739716 µW** | **6.633439 µW** |
-| Window energy | **1.375879 pJ** | **1.373972 pJ** | **2.653376 pJ** |
-| Measurement window | 100 ns | 100 ns | 400 ns |
+| tpHL | **0.557340 ns** | **0.903516 ns** | **0.535308 ns** |
+| tpLH | **0.538143 ns** | **0.540487 ns** | **0.424656 ns** |
+| Average tp | **0.547741 ns** | **0.722002 ns** | **0.479982 ns** |
+| Average P | **13.758791 µW** | **13.739716 µW** | **13.248718 µW** |
+| Window energy | **1.375879 pJ** | **1.373972 pJ** | **5.299487 pJ** |
+| Measurement window | 100 ns | 100 ns | 100 ns |
 
 # 16. Quantitative Relative Comparison
 
@@ -530,14 +537,14 @@ Using the inverter only as a numerical reference:
 
 | Metric | NAND2 / Inverter | NOR2 / Inverter |
 |---|---:|---:|
-| tpHL ratio | 1.621× | 0.965× |
-| tpLH ratio | 1.004× | 0.793× |
-| Average-delay ratio | 1.318× | 0.880× |
-| Average-power ratio* | 0.999× | 0.482× |
+| tpHL ratio | 1.621× | 0.960× |
+| tpLH ratio | 1.004× | 0.789× |
+| Average-delay ratio | 1.318× | 0.876× |
+| Average-power ratio* | 0.999× | 0.963× |
 
 \*Power ratios are **simulation-condition ratios**, not normalized technology metrics, because the input activity and measurement conditions differ.
 
-The quantitative result shows that the corrected NAND's largest timing penalty occurs in the high-to-low transition, which is consistent with its series NMOS pull-down topology. The NOR's measured delays are lower than the inverter for the specific 8 µm PMOS/2 µm NMOS sizing and stimulus used.
+The quantitative result shows that the corrected NAND's largest timing penalty occurs in the high-to-low transition, which is consistent with its series NMOS pull-down topology. The NOR's updated measured delays are also slightly lower than the inverter for the specific 8 µm PMOS/2 µm NMOS sizing and stimulus used.
 
 # 17. Interpretation of the Earlier vs Updated Comparison
 
@@ -613,9 +620,9 @@ The NAND `tpLH` is close to the inverter `tpLH`, because the measured rising tra
 
 ### 19.3 NOR2
 
-The NOR uses parallel NMOS devices and series PMOS devices. The PMOS width was increased to 8 µm to compensate for the series pull-up topology. Under the supplied simulation conditions, the measured average delay is 0.482253 ns.
+The NOR uses parallel NMOS devices and series PMOS devices. The PMOS width was increased to 8 µm to compensate for the series pull-up topology. Under the supplied simulation conditions, the measured average delay is 0.479982 ns.
 
-Its measured average power is 6.633439 µW, but this should not be interpreted as a topology-only power advantage because the NOR simulation uses a different pulse period and 400 ns measurement window.
+Its measured average power is 13.248718 µW, but this should not be interpreted as a topology-only power advantage because the NOR simulation uses a different pulse period and 100 ns measurement window.
 
 # 20. Final Comparison Statement
 
@@ -642,7 +649,7 @@ The comparison is based on the following project artifacts:
 - `NOR_REPORT.md`
 - previous `COMPARATIVE_ANALYSIS_REPORT.md`
 
-The current inverter measurement artifact records the 50 fF load, 100 ns simulation, and verified timing/power values. The NAND measurement artifact records the 50 fF load, 100 ns simulation, and verified delay/power values. The NOR artifact records the 50 fF load, 400 ns simulation, and verified delay/power values.
+The current inverter measurement artifact records the 50 fF load, 100 ns simulation, and verified timing/power values. The NAND measurement artifact records the 50 fF load, 100 ns simulation, and verified delay/power values. The NOR artifact records the 50 fF load, 100 ns simulation, and verified delay/power values.
 
 ## Appendix A — Raw Verified Values
 
@@ -669,20 +676,20 @@ Esw  = 1.37397155119e-12 J
 ### NOR2
 
 ```text
-tpHL = 5.37748324787e-10 s
-tpLH = 4.26756714561e-10 s
-tp   = 4.82252519674e-10 s
-Pavg = 6.63343882795e-06 W
-Esw  = 2.65337553118e-12 J
+tpHL = 5.35308298234e-10 s
+tpLH = 4.24655952427e-10 s
+tp   = 4.79982125330e-10 s
+Pavg = 1.32487182873e-05 W
+Esw  = 1.32487182873e-12 J
 ```
 
 ## Appendix B — Important Limitations
 
 1. The simulations use educational Level-1 MOS models rather than a foundry-qualified PDK.
 2. LTspice reported model/device warnings for the selected transistor dimensions.
-3. The NOR uses a 400 ns window while the inverter and NAND use 100 ns.
-4. The three gates do not currently have identical input frequencies and switching activity.
-5. The reported integrated energies are window energies, not single-transition energies.
+3. The NOR uses a 100 ns power-measurement window with the inverter and NAND also using 100 ns.
+4. The three gates do not currently have identical input frequencies, switching activity, and measurement expressions.
+5. The reported NOR 100 ns energy is derived from average power × measurement window; it is window energy, not single-transition energy.
 6. Transistor count is used as a structural complexity indicator; it is not a substitute for actual layout area.
 7. Delay values are directly measured from successful `.meas` results and should be distinguished from older failed or artifact-contaminated measurements.
 

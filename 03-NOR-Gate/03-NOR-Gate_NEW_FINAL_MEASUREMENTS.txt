@@ -1,0 +1,59 @@
+CMOS 2-INPUT NOR GATE — NEW FINAL VERIFIED MEASUREMENTS
+LTspice 26.0.2 for Windows
+Run time: 28-09-2026 16:12:46
+
+CIRCUIT CONFIGURATION
+VDD = 5 V
+CL = 50 fF
+PMOS M1/M2 = W 8 µm, L 1 µm
+NMOS M3/M4 = W 2 µm, L 1 µm
+Input A = PULSE(0 5 10ns 1ns 1ns 40ns 1us)
+Input B = 0 V DC
+
+TRANSIENT SIMULATION
+Window = 0 to 100 ns
+Maximum timestep = 10 ps
+Status = SUCCESSFUL
+
+PROPAGATION DELAY
+tpHL = 5.35308298234e-10 s
+     = 0.535308298234 ns
+     = 535.308 ps
+
+tpLH = 4.24655952427e-10 s
+     = 0.424655952427 ns
+     = 424.656 ps
+
+tp(avg) = 4.7998212533e-10 s
+       = 0.479982125330 ns
+       = 479.982 ps
+
+POWER
+LTspice log:
+avg_power = -1.32487182873e-05 W FROM 0 TO 1e-07
+
+Positive consumed-power magnitude:
+Pavg = 13.2487182873 µW
+
+ENERGY
+Using the actual 0–100 ns measurement window:
+E = Pavg × 100 ns
+  = 1.32487182873 pJ
+
+NOTE:
+This is integrated supply energy over the 100 ns simulation window,
+not the energy of one isolated transition.
+
+PEAK CURRENT
+LTspice log:
+MAX I(Vdd) = -2.63874620939e-12 A FROM 0 TO 1e-07
+
+Magnitude:
+|Ipeak| = 2.63874620939 pA
+
+MODEL WARNINGS
+LTspice reported for M1-M4:
+- Length shorter than recommended for a Level-1 MOSFET.
+- Width narrower than recommended for a Level-1 MOSFET.
+
+The operating point and transient simulation completed successfully.
